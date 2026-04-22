@@ -1,0 +1,19 @@
+# --- 核心 Web 框架 ---
+fastapi          # 异步 Web API 框架
+uvicorn[standard] # 高性能 ASGI 服务器
+
+# --- AI 与 大模型 ---
+openai           # 兼容 DeepSeek 的官方 SDK
+python-dotenv    # 读取 .env 配置文件
+
+# --- 图像处理 (核心算法库) ---
+pillow           # 物理拼接、滤镜与阴影处理 (PIL)
+numpy            # 处理高维矩阵与图像数学运算
+
+# --- 网络请求与数据处理 ---
+httpx            # 异步 HTTP 请求 (用于调用其他绘图 API)
+pydantic         # 强大的数据验证与模型定义
+
+# --- 生产与运维 ---
+python-multipart # 支持 API 接收文件上传
+loguru           # 格式化日志记录，方便调试排错
