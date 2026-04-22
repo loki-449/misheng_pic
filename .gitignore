@@ -1,0 +1,36 @@
+# === 敏感信息 (绝对禁止同步) ===
+.env
+*.key
+certs/
+secrets.json
+
+# === 运行缓存与数据 (防止 Git 库过大) ===
+app/static/uploads/*
+app/static/results/*
+# 保留文件夹结构，但不保留里面的图片内容
+!app/static/uploads/.gitkeep
+!app/static/results/.gitkeep
+
+# === Python 垃圾文件 ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+
+# === 系统与编辑器缓存 ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# === 日志 ===
+logs/*.log
+*.log
