@@ -1,16 +1,11 @@
 # 1. 使用官方轻量级 Python 镜像
-FROM python:3.10-slim
+FROM python:3.12-slim
 
 # 2. 设置工作目录
 WORKDIR /app
 
 # 3. 安装系统级依赖 (Pillow 处理图片需要一些底层 C 库)
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libjpeg-dev \
-    zlib1g-dev \
-    libpng-dev \
-    && rm -rf /var/lib/apt/lists/*
+
 
 # 4. 复制依赖清单并安装
 # 先复制 requirements.txt 是为了利用 Docker 的缓存机制，加速后续构建
@@ -30,3 +25,4 @@ EXPOSE 8000
 # 8. 启动命令
 # 使用 uvicorn 运行 FastAPI，--host 0.0.0.0 确保外部可以访问
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+

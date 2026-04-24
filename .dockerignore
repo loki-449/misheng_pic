@@ -1,0 +1,18 @@
+# 忽略 Python 缓存
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 忽略本地环境变量和虚拟环境
+.env
+venv/
+.venv/
+env/
+
+# 忽略 Git 和 IDE 配置
+.git/
+.gitignore
+.vscode/
+
+# 忽略本地生成的静态文件
+app/static/*
