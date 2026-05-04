@@ -1,0 +1,17 @@
+[
+  {
+    "id": "bg-clean-paper-001",
+    "path": "assets/backgrounds/clean-paper-001.jpg",
+    "tags": ["clean", "craft", "paper", "low saturation"]
+  },
+  {
+    "id": "bg-fresh-flower-001",
+    "path": "assets/backgrounds/fresh-flower-001.jpg",
+    "tags": ["fresh", "spring", "flower", "soft light"]
+  },
+  {
+    "id": "bg-retro-film-001",
+    "path": "assets/backgrounds/retro-film-001.jpg",
+    "tags": ["retro", "vintage", "grain", "warm"]
+  }
+]

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>弥生文创 · 宣传图生成</title>
+  <style>
+    :root {
+      --bg: #f6f4f0;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --sub: #4a4a4a;
+      --line: #d8d4cc;
+      --accent: #0d7a5c;
+      --accent-hover: #0a6349;
+      --err: #b42318;
+      --ok: #0d7a5c;
+      --step-bg: #eef6f3;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.65;
+    }
+    .wrap {
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 1.25rem 1rem 3rem;
+    }
+    h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      line-height: 1.35;
+    }
+    .lead {
+      margin: 0 0 1.5rem;
+      color: var(--sub);
+      font-size: 1.05rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.35rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .step {
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+      margin-bottom: 1.35rem;
+    }
+    .step:last-of-type { margin-bottom: 0; }
+    .step-num {
+      flex-shrink: 0;
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 50%;
+      background: var(--step-bg);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.15rem;
+    }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title {
+      font-weight: 700;
+      font-size: 1.08rem;
+      margin: 0 0 0.35rem;
+    }
+    .step-help {
+      margin: 0 0 0.65rem;
+      color: var(--sub);
+      font-size: 0.98rem;
+    }
+    label.show {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      font-size: 1rem;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 0.75rem 0.85rem;
+      border-radius: 10px;
+      border: 2px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    textarea { min-height: 5.5rem; resize: vertical; }
+    input[type="file"] {
+      width: 100%;
+      padding: 0.65rem;
+      font-size: 1rem;
+      border: 2px dashed var(--line);
+      border-radius: 10px;
+      background: #fafafa;
+    }
+    .btn-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    @media (min-width: 520px) {
+      .btn-row { flex-direction: row; flex-wrap: wrap; align-items: center; }
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      padding: 0.9rem 1.35rem;
+      font-size: 1.08rem;
+      font-weight: 700;
+      font-family: inherit;
+      min-height: 3.1rem;
+    }
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    button.primary:hover:not(:disabled) { background: var(--accent-hover); }
+    button.secondary {
+      background: #fff;
+      color: var(--accent);
+      border: 2px solid var(--accent);
+    }
+    button.secondary:hover:not(:disabled) { background: var(--step-bg); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    #msg {
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      min-height: 1.5em;
+    }
+    #msg.err { background: #fdecea; color: var(--err); border: 1px solid #f5c4c0; }
+    #msg.ok { background: var(--step-bg); color: var(--ok); border: 1px solid #b8dccf; }
+    #msg.wait { background: #f0f0f0; color: var(--sub); border: 1px solid var(--line); }
+    details.more {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+    }
+    details.more summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--sub);
+      font-size: 0.98rem;
+    }
+    details.more .inner { margin-top: 0.85rem; }
+    .field { margin-bottom: 1rem; }
+    .field:last-child { margin-bottom: 0; }
+    .micro {
+      font-size: 0.92rem;
+      color: var(--sub);
+      margin: 0.35rem 0 0;
+    }
+    #result h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.2rem;
+    }
+    .result-intro {
+      color: var(--sub);
+      margin: 0 0 1rem;
+      font-size: 1rem;
+    }
+    .kw-title { font-weight: 700; margin: 0 0 0.5rem; font-size: 1rem; }
+    .kw {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .kw span {
+      background: var(--step-bg);
+      color: var(--text);
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      border: 1px solid #c5e0d6;
+    }
+    .variants {
+      display: grid;
+      gap: 1.15rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 560px) {
+      .variants { grid-template-columns: repeat(3, 1fr); }
+    }
+    .variants figure {
+      margin: 0;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+    .variants .cap {
+      padding: 0.65rem 0.75rem;
+      font-size: 0.95rem;
+      color: var(--sub);
+      text-align: center;
+    }
+    .variants .cap a {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+    .variants img {
+      width: 100%;
+      height: auto;
+      display: block;
+      vertical-align: middle;
+    }
+    .save-tip {
+      font-size: 0.95rem;
+      color: var(--sub);
+      margin: 1rem 0 0;
+      padding: 0.75rem;
+      background: #faf8f5;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+    }
+    footer {
+      text-align: center;
+      color: var(--sub);
+      font-size: 0.88rem;
+      margin-top: 2rem;
+      padding: 0 0.5rem;
+    }
+    footer a { color: var(--accent); }
+    [hidden] { display: none !important; }
+    .prompt-box {
+      width: 100%;
+      min-height: 5rem;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.92rem;
+      font-family: inherit;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fafafa;
+      color: var(--text);
+      resize: vertical;
+    }
+    .meta-line { font-size: 0.95rem; color: var(--sub); margin: 0 0 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>弥生文创 · 宣传图生成</h1>
+    <p class="lead">在网页上传<strong>一张或多张商品照片</strong>后填写说明与（可选）宣传文案，点绿色大按钮：系统会用 <strong>Gemini / DeepSeek</strong>（按服务器配置顺序）从<strong>固定中文词表</strong>里选出三个风格词，并由模型在两种拼接方案中选一种（单图主图+副图辅助 / 多图同级宫格），再按风格词用 <strong>Nanobanana</strong>（若已配置）生成背景；商品区下方会<strong>预留宣传位</strong>，填写了宣传文案且已配置画图接口时，会<strong>生成字块图</strong>再与背景合成，最后给出<strong>三种效果</strong>供对比保存。</p>
+
+    <section class="card" aria-labelledby="form-title">
+      <h2 id="form-title" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;">填写表单</h2>
+
+      <div class="step">
+        <div class="step-num" aria-hidden="true">1</div>
+        <div class="step-body">
+          <p class="step-title">先选商品照片（可多张）</p>
+          <p class="step-help">请用手机或电脑里<strong>已经拍好的商品图</strong>。支持 JPG、PNG、webp，单张一般不超过 10MB。可选<strong>多张</strong>：系统会按 AI 判断的拼接方案排版（主图+副图或同级宫格）。</p>
+          <label class="show" for="product_image">选择照片文件（可多选）</label>
+          <input id="product_image" type="file" accept="image/png,image/jpeg,image/webp" multiple />
+          <p class="micro" id="file_hint" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num" aria-hidden="true">2</div>
+        <div class="step-body">
+          <p class="step-title">写一下商品叫什么、什么样</p>
+          <p class="step-help">写得越清楚，自动搭配越贴近您心里想的风格。不会写可以只写一两句大白话。</p>
+          <div class="field">
+            <label class="show" for="product_name">商品名称</label>
+            <input id="product_name" type="text" placeholder="例如：樱花和纸胶带" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label class="show" for="product_desc">商品样子或卖点（选填，建议填写）</label>
+            <textarea id="product_desc" placeholder="例如：粉色、半透明、适合春天手账、给年轻人用"></textarea>
+          </div>
+          <div class="field">
+            <label class="show" for="promo_copy">宣传文案（选填）</label>
+            <textarea id="promo_copy" rows="3" placeholder="例如：春季上新 · 限时优惠；将出现在商品拼图下方的留白区域。需服务器配置 Nanobanana 才会自动生成字块图，未配置时仅保留空白区。"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num" aria-hidden="true">3</div>
+        <div class="step-body">
+          <p class="step-title">选一个版面样子</p>
+          <p class="step-help">决定<strong>标题和商品图在画面上的位置</strong>。拿不准就选第一项「经典居中」。</p>
+          <label class="show" for="layout_id">版面样式</label>
+          <select id="layout_id">
+            <option value="classic_center">经典居中 — 标题在左上，商品在中间</option>
+            <option value="hero_top">标题在上 — 标题在中间靠上，商品偏下</option>
+            <option value="editorial_split">分栏式 — 商品靠右，左侧留给标题</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num" aria-hidden="true">4</div>
+        <div class="step-body">
+          <p class="step-title">想自己指定三个「风格词」吗？（可不填）</p>
+          <p class="step-help">系统会自动从照片里猜三个风格词。若您<strong>心里已有固定说法</strong>，可以在这里写上<strong>三个词</strong>，中间用<strong>中文逗号</strong>或<strong>英文逗号</strong>分开。例如：<strong>复古，质感，高级</strong></p>
+          <label class="show" for="style_override">自己写的三个风格词（可不填）</label>
+          <input id="style_override" type="text" placeholder="不填则交给系统自动判断" autocomplete="off" />
+        </div>
+      </div>
+
+      <details class="more">
+        <summary>更多设置（一般不用改）</summary>
+        <div class="inner">
+          <div class="field">
+            <label class="show" for="tagline">图片上的小副标题</label>
+            <input id="tagline" type="text" value="新品推荐" />
+            <p class="micro">会印在商品名称下面一行小字。</p>
+          </div>
+          <div class="field">
+            <label class="show" for="canvas_size">成图清晰度</label>
+            <select id="canvas_size">
+              <option value="640">较低 — 生成快，适合先试效果</option>
+              <option value="1024" selected>常用 — 一般够用</option>
+              <option value="2048">较高 — 更清晰，生成稍慢</option>
+            </select>
+            <p class="micro">数字越大越清晰，对电脑要求也略高。</p>
+          </div>
+        </div>
+      </details>
+
+      <div class="btn-row">
+        <button type="button" class="primary" id="btn_run">生成三张效果图</button>
+        <button type="button" class="secondary" id="btn_regen" hidden>用上一次的照片再生成一版</button>
+      </div>
+      <p class="micro" id="saved_hint" style="margin-top:0.75rem;"></p>
+      <div id="msg" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card" id="result" hidden>
+      <h2>生成好了，请看下面</h2>
+      <p class="result-intro">系统根据您的照片，先总结了下面三个<strong>风格词</strong>（若您第 4 步自己填了词，则以您填的为准）。下面是<strong>三种</strong>自动搭配的效果，任选一个最满意的即可。</p>
+      <p class="kw-title">本次总结的三个风格词</p>
+      <div class="kw" id="keywords"></div>
+      <p class="meta-line" id="style_meta"></p>
+      <p class="meta-line" id="stitch_meta" hidden></p>
+      <details class="more" id="bg_prompt_wrap" hidden>
+        <summary>查看系统生成的「英文背景说明」（给自动画图服务用，可忽略）</summary>
+        <p class="micro">若您在服务器里配置了 Nanobanana 等画图接口，后台会用下面这段英文去生成背景图；未配置时，下面内容仍可供复制到别的画图工具使用。</p>
+        <textarea id="bg_prompt_en" class="prompt-box" readonly rows="5" spellcheck="false"></textarea>
+      </details>
+      <div class="variants" id="variants"></div>
+      <p class="save-tip"><strong>怎么保存到手机或电脑？</strong>先点每张图下面的「打开清晰大图」，在大图上<strong>长按</strong>（手机）或<strong>右键 — 图片另存为</strong>（电脑），即可保存。</p>
+    </section>
+
+    <footer>
+      若页面打不开生成按钮，请确认本网页地址栏里的网站能正常打开。<br />
+      <span style="opacity:0.85;">技术人员如需接口说明，可打开 <a href="/docs">这里</a>。</span>
+    </footer>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const msg = $("msg");
+    const btnRun = $("btn_run");
+    const btnRegen = $("btn_regen");
+
+    function setMsg(text, cls) {
+      msg.textContent = text || "";
+      msg.className = cls || "";
+    }
+
+    function friendlyError(res, data) {
+      if (data && typeof data.message_zh === "string" && data.message_zh.trim()) {
+        return data.message_zh.trim();
+      }
+      const d = data && data.detail;
+      if (d && typeof d === "object" && !Array.isArray(d) && d.message_zh) {
+        var fx = Array.isArray(d.fixes) ? d.fixes.join("\n") : "";
+        return String(d.message_zh) + (fx ? "\n\n" + fx : "");
+      }
+      if (typeof d === "string") {
+        if (d === "unsupported_file_type") return "请上传 JPG、PNG 或 webp 格式的照片，其它格式不支持。";
+        if (d === "file_too_large") return "照片文件太大，请换一张较小的图片，或用手机把照片压缩后再传。";
+        if (d === "invalid_layout_id") return "版面选择有误，请重新选择「版面样式」。";
+        if (d === "invalid_saved_image") return "系统无法识别上一次的照片记录，请重新选择照片后再点绿色按钮生成。";
+        if (d === "upload_not_found") return "找不到上一次上传的照片，请重新选择照片文件。";
+        if (d === "no_product_images") return "请至少选择一张商品照片。";
+        if (d === "missing_saved_product_images") return "再生成需要带上一次返回的已保存图片名，请重新完整生成一次。";
+        return d;
+      }
+      if (Array.isArray(d) && d.length) {
+        return d.map((x) => (x.msg || x) + "").join("；");
+      }
+      if (res.status === 0 || res.status >= 500) return "服务器暂时繁忙，请稍等几分钟再试一次。";
+      if (res.status === 404) return "找不到服务地址，请确认网站已打开且地址正确。";
+      return "生成没有成功（错误代码 " + res.status + "），请稍后再试或换一张照片。";
+    }
+
+    let lastSaved = "";
+
+    const STYLE_SOURCE_ZH = {
+      llm: "风格词由系统自动分析（推荐）",
+      user: "风格词按您第 4 步填写的内容",
+      heuristic: "风格词由颜色统计临时推断（未连上智能分析或分析失败时）",
+      "heuristic+llm_bg": "风格词由颜色统计推断，背景英文说明由系统补充生成",
+      heuristic_vocab: "未配置文本模型时，风格词由颜色统计对齐到固定词表",
+      "heuristic_vocab+llm_bg": "风格词对齐词表后，背景英文说明由模型补全",
+      llm_gemini: "风格词由 Gemini 在固定中文词表中选取",
+      llm_deepseek: "风格词由 DeepSeek 在固定中文词表中选取",
+    };
+
+    (function () {
+      var inp = $("product_image");
+      inp.addEventListener("change", function () {
+        var hint = $("file_hint");
+        if (!this.files || this.files.length === 0) {
+          hint.textContent = "";
+          return;
+        }
+        hint.textContent = "已选择 " + this.files.length + " 张照片，将一并参与风格分析与排版。";
+      });
+    })();
+
+    async function callMvp(url, fd) {
+      btnRun.disabled = true;
+      btnRegen.disabled = true;
+      setMsg("正在生成，请稍候……一般十几秒到一分钟，请不要关闭本页。", "wait");
+      $("result").hidden = true;
+
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "x-request-id": "web-" + crypto.randomUUID() },
+          body: fd,
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          setMsg(friendlyError(res, data), "err");
+          return;
+        }
+        lastSaved =
+          data.saved_product_images && data.saved_product_images.length
+            ? data.saved_product_images.join(",")
+            : data.saved_product_image || "";
+        if (lastSaved) {
+          $("saved_hint").textContent =
+            "提示：若您想在不重新选照片的情况下再生成一版，可以改一改「风格词」「版面」或「宣传文案」，然后点「用上一次的照片再生成一版」（多张时会沿用上一批全部图片）。";
+          btnRegen.hidden = false;
+        } else {
+          $("saved_hint").textContent = "";
+          btnRegen.hidden = true;
+        }
+
+        $("keywords").innerHTML = (data.style_keywords_cn || [])
+          .map((k) => "<span>" + escapeHtml(k) + "</span>")
+          .join("");
+
+        var src = data.style_source || "";
+        var srcR = data.background_raster_source || "none";
+        var rasterZh =
+          srcR === "gemini"
+            ? "；背景图由 Google Gemini 绘图模型生成（模型：" +
+              (data.gemini_image_model || "见配置") +
+              "）。"
+            : srcR === "nanobanana"
+              ? "；背景图由 Nanobanana 接口生成。"
+              : srcR === "stable_diffusion"
+                ? "；背景图由 Stable Diffusion（见服务器 STABLE_DIFFUSION_API_URL）生成。"
+                : "；未使用外接画图接口时，背景为本机渐变或素材库。";
+        var att = data.background_generation_attempts || [];
+        if (srcR === "none" && att.length) {
+          rasterZh +=
+            " 诊断：" +
+            att
+              .map(function (a) {
+                return (a.source || "?") + (a.ok ? " 成功" : " 未成功" + (a.reason ? "(" + a.reason + ")" : ""));
+              })
+              .join("；") +
+            "。可在 .env 配置 STABLE_DIFFUSION_API_URL，或调整 MVP_BACKGROUND_RASTER_ORDER。";
+        }
+        var styleLine =
+          STYLE_SOURCE_ZH[src] ||
+          (src.indexOf("llm_") === 0
+            ? "风格词由「" + src.replace("llm_", "") + "」在固定词表中选取（见服务器 prompts/mvp_style_vocab.txt）"
+            : "风格分析方式：" + src);
+        $("style_meta").textContent = styleLine + rasterZh;
+
+        var sm = $("stitch_meta");
+        if (data.stitch_mode) {
+          sm.hidden = false;
+          sm.textContent =
+            "拼接方案：" +
+            (data.stitch_mode === "single_main_aux" ? "单图主图 + 副图辅助" : "多图同级分布") +
+            "（分布：" +
+            (data.stitch_distribution || "") +
+            "；判定：" +
+            (data.stitch_decision_provider || "") +
+            "）。" +
+            (data.promo_raster_generated
+              ? " 宣传字块已由「" + (data.promo_raster_source || "绘图接口") + "」生成。"
+              : $("promo_copy").value.trim()
+                ? " 宣传字块未生成（请配置 Nanobanana 或 Stable Diffusion）。"
+                : "");
+        } else {
+          sm.hidden = true;
+          sm.textContent = "";
+        }
+
+        var pe = (data.background_image_prompt_en || "").trim();
+        var wrap = $("bg_prompt_wrap");
+        var ta = $("bg_prompt_en");
+        if (pe) {
+          ta.value = pe + (data.background_negative_en ? "\n\n避免：" + data.background_negative_en : "");
+          wrap.hidden = false;
+        } else {
+          ta.value = "";
+          wrap.hidden = true;
+        }
+
+        const box = $("variants");
+        box.innerHTML = "";
+        const labels = ["第一种效果", "第二种效果", "第三种效果"];
+        (data.variants || []).forEach((v, i) => {
+          const fig = document.createElement("figure");
+          const img = document.createElement("img");
+          img.src = v.thumbnail_path || v.image_path;
+          img.alt = labels[i] || "效果图";
+          img.loading = "lazy";
+          const cap = document.createElement("div");
+          cap.className = "cap";
+          const full = v.image_path || "";
+          const name = labels[i] || "效果图";
+          cap.innerHTML =
+            name +
+            (full
+              ? '<br /><a href="' +
+                full +
+                '" target="_blank" rel="noopener">打开清晰大图</a>'
+              : "");
+          fig.appendChild(img);
+          fig.appendChild(cap);
+          box.appendChild(fig);
+        });
+
+        $("result").hidden = false;
+        setMsg("已经生成完毕！请往下面看三张图，点「打开清晰大图」即可查看或保存。", "ok");
+      } catch (e) {
+        setMsg("网络连不上或页面已过期，请检查网络后刷新本页再试。", "err");
+      } finally {
+        btnRun.disabled = false;
+        btnRegen.disabled = false;
+      }
+    }
+
+    btnRun.addEventListener("click", () => {
+      const inp = $("product_image");
+      const files = Array.from(inp.files || []);
+      if (!files.length) {
+        setMsg("请先在第 1 步选择至少一张商品照片，再点绿色按钮。", "err");
+        return;
+      }
+      const fd = new FormData();
+      files.forEach(function (f) {
+        fd.append("product_images", f);
+      });
+      fd.append("product_name", $("product_name").value.trim() || "未命名商品");
+      fd.append("product_desc", $("product_desc").value.trim() || " ");
+      fd.append("promo_copy", $("promo_copy").value.trim() || "");
+      fd.append("tagline", $("tagline").value.trim() || "新品推荐");
+      fd.append("canvas_size", ($("canvas_size").value || "1024").trim());
+      fd.append("layout_id", $("layout_id").value);
+      const ov = $("style_override").value.trim();
+      if (ov) fd.append("style_keywords_override", ov);
+      callMvp("/v1/poster/mvp/run", fd);
+    });
+
+    btnRegen.addEventListener("click", () => {
+      if (!lastSaved) {
+        setMsg("请先用绿色按钮成功生成一次，再使用本按钮。", "err");
+        return;
+      }
+      const fd = new FormData();
+      fd.append("saved_product_images", lastSaved);
+      fd.append("product_name", $("product_name").value.trim() || "未命名商品");
+      fd.append("product_desc", $("product_desc").value.trim() || " ");
+      fd.append("promo_copy", $("promo_copy").value.trim() || "");
+      fd.append("tagline", $("tagline").value.trim() || "新品推荐");
+      fd.append("canvas_size", ($("canvas_size").value || "1024").trim());
+      fd.append("layout_id", $("layout_id").value);
+      const ov = $("style_override").value.trim();
+      if (ov) fd.append("style_keywords_override", ov);
+      callMvp("/v1/poster/mvp/regenerate", fd);
+    });
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+  </script>
+</body>
+</html>

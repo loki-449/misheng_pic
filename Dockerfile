@@ -24,5 +24,5 @@ EXPOSE 8000
 
 # 8. 启动命令
 # 使用 uvicorn 运行 FastAPI，--host 0.0.0.0 确保外部可以访问
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
 

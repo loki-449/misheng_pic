@@ -17,3 +17,6 @@ pydantic         # 强大的数据验证与模型定义
 # --- 生产与运维 ---
 python-multipart # 支持 API 接收文件上传
 loguru           # 格式化日志记录，方便调试排错
+
+# --- 测试 ---
+pytest
